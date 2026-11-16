@@ -335,7 +335,8 @@ namespace {
         }
         memcpy(&page[kCode], kCaveCode, sizeof kCaveCode);
         memset(&page[kData], 0, kCaveSize - kData);
-
+        
+        // clang-format off
         // 1: RemoteVisit(cave, current, headset matrix, raw origin)
         Put(s, { 0x48, 0x8d, 0x0d }); Put32(s, (int64_t)(kData - (kStub1 + s.size() + 4)));             // lea rcx, data
         Put(s, { 0x48, 0x8d, 0x97 }); Put32(s, cur);                                                    // lea rdx, [rdi+CUR]
@@ -359,6 +360,7 @@ namespace {
         Put(s, { 0x4c, 0x8d, 0x2d }); Put32(s, (int64_t)table - (int64_t)(cave + kStub2 + s.size() + 4));   // lea r13, table
         Put(s, { 0x49, 0x8d, 0x6f, 0xff });                                                                 // lea rbp, [r15-1]
         Put(s, { 0xe9 }); Put32(s, (int64_t)laser_loop - (int64_t)(cave + kStub2 + s.size() + 4));          // jmp loop
+        // clang-format on
         memcpy(&page[kStub2], s.data(), s.size());
         if (!WriteProcessMemory(comp->hdl, (void*)cave, page.data(), page.size(),
             &read) ||
